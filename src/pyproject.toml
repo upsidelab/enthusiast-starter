@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "enthusiast-custom"
+version = "1.0.0"
+description = "A custom package for Enthusiast"
+authors = ["Enthusiast User <user@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+enthusiast-common = ">=1,<2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
