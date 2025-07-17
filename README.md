@@ -156,7 +156,6 @@ You are a helpful agent, answering questions about pdf document. Always use cont
 
 3. Create context retrieving tool:
 ```python
-import tiktoken
 from enthusiast_common.injectors import BaseInjector
 from enthusiast_common.tools import BaseLLMTool
 from langchain_core.language_models import BaseLanguageModel
@@ -194,7 +193,7 @@ class ContextSearchTool(BaseLLMTool):
 
 4. Create configuration inside `config.py` file:
 ```python
-from enthusiast_common.config import AgentConfigWithDefaults, LLMConfig, LLMToolConfig
+from enthusiast_common.config import AgentConfigWithDefaults, LLMToolConfig
 from langchain_core.prompts import ChatPromptTemplate
 
 from .tools.pdf_context_tool import ContextSearchTool
