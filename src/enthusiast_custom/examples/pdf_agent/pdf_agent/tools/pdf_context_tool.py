@@ -16,8 +16,6 @@ class ContextSearchTool(BaseLLMTool):
     ARGS_SCHEMA = ContextSearchToolInput
     RETURN_DIRECT = False
 
-    ENCODING: tiktoken.encoding_for_model = None
-
     def __init__(
         self,
         data_set_id: int,
@@ -28,10 +26,6 @@ class ContextSearchTool(BaseLLMTool):
         self.data_set_id = data_set_id
         self.llm = llm
         self.injector = injector
-        if llm.name in tiktoken.model.MODEL_TO_ENCODING:
-            self.ENCODING = tiktoken.encoding_for_model(llm.name)
-        else:
-            self.ENCODING = tiktoken.encoding_for_model("gpt-4o")
 
     def run(self, full_user_request: str):
         document_retriever = self.injector.document_retriever

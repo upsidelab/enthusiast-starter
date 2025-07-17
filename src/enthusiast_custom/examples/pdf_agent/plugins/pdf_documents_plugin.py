@@ -1,32 +1,35 @@
+import logging
 from pathlib import Path
 
 import requests
 from enthusiast_common import DocumentSourcePlugin, DocumentDetails
 from langchain_community.document_loaders import PyPDFLoader
 
+logger = logging.getLogger(__name__)
 
 class PDFDocumentSourcePlugin(DocumentSourcePlugin):
     def __init__(self, data_set_id: int, config: dict):
         super().__init__(data_set_id, config)
 
     def fetch(self) -> list[DocumentDetails]:
-        title = "A practical guide to building agents"
-        url = "https://cdn.openai.com/business-guides-and-resources/a-practical-guide-to-building-agents.pdf"
-
         results = []
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
+        data = self.config.get("data", [])
 
-            temp_path = Path(f"/tmp/temp.pdf")
-            with open(temp_path, "wb") as f:
-                f.write(response.content)
+        for document in data:
+            url = document.get("url")
+            title = document.get("title")
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
 
-            loader = PyPDFLoader(str(temp_path))
-            for index, page in enumerate(loader.lazy_load()):
-                results.append(DocumentDetails(url=f"{url}/{index}", title=title, content=page.page_content))
-            print(len(results))
-            return results
+                temp_path = Path(f"/tmp/temp.pdf")
+                with open(temp_path, "wb") as f:
+                    f.write(response.content)
 
-        except Exception as e:
-            print(f"Failed to load {url} ({title}): {e}")
+                loader = PyPDFLoader(str(temp_path))
+                for index, page in enumerate(loader.lazy_load()):
+                    results.append(DocumentDetails(url=f"{url}/{index}", title=title, content=page.page_content))
+                return results
+
+            except Exception as e:
+                logger.error(f"Failed to load {url} ({title}): {e}")

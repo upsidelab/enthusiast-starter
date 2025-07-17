@@ -54,38 +54,41 @@ poetry add langchain-community pypdf
 
 2. Next, create a new file and add Plugin class
 ```python
+import logging
 from pathlib import Path
 
 import requests
 from enthusiast_common import DocumentSourcePlugin, DocumentDetails
 from langchain_community.document_loaders import PyPDFLoader
 
+logger = logging.getLogger(__name__)
 
 class PDFDocumentSourcePlugin(DocumentSourcePlugin):
     def __init__(self, data_set_id: int, config: dict):
         super().__init__(data_set_id, config)
 
     def fetch(self) -> list[DocumentDetails]:
-        title = "A practical guide to building agents"
-        url = "<pdf_url>"
-
         results = []
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
+        data = self.config.get("data", [])
 
-            temp_path = Path(f"/tmp/temp.pdf")
-            with open(temp_path, "wb") as f:
-                f.write(response.content)
+        for document in data:
+            url = document.get("url")
+            title = document.get("title")
+            try:
+                response = requests.get(url)
+                response.raise_for_status()
 
-            loader = PyPDFLoader(str(temp_path))
-            for index, page in enumerate(loader.lazy_load()):
-                results.append(DocumentDetails(url=f"{url}/{index}", title=title, content=page.page_content))
-            return results
+                temp_path = Path(f"/tmp/temp.pdf")
+                with open(temp_path, "wb") as f:
+                    f.write(response.content)
 
-        except Exception as e:
-            print(f"Failed to load {url} ({title}): {e}")
+                loader = PyPDFLoader(str(temp_path))
+                for index, page in enumerate(loader.lazy_load()):
+                    results.append(DocumentDetails(url=f"{url}/{index}", title=title, content=page.page_content))
+                return results
 
+            except Exception as e:
+                logger.error(f"Failed to load {url} ({title}): {e}")
 ```
 3. To enable new plugin, add it to settings_override.py:
 ```python
@@ -93,6 +96,9 @@ CATALOG_DOCUMENT_SOURCE_PLUGINS = {
     "PDF Plugin": "<path_to_file>.PDFDocumentSourcePlugin"
 }
 ```
+Now this custom plugin will be available in Document source section.
+`config` variable used in above example could be provided while adding any source plugin, in this example it was used to provide urls to documents.
+
 ### Next, let's move to agent. 
 1. Create a directory for you agent (e.g. `pdf_agent`). Then inside it create `agent.py` file:
 ```python
@@ -167,8 +173,6 @@ class ContextSearchTool(BaseLLMTool):
     ARGS_SCHEMA = ContextSearchToolInput
     RETURN_DIRECT = False
 
-    ENCODING: tiktoken.encoding_for_model = None
-
     def __init__(
         self,
         data_set_id: int,
@@ -179,10 +183,6 @@ class ContextSearchTool(BaseLLMTool):
         self.data_set_id = data_set_id
         self.llm = llm
         self.injector = injector
-        if llm.name in tiktoken.model.MODEL_TO_ENCODING:
-            self.ENCODING = tiktoken.encoding_for_model(llm.name)
-        else:
-            self.ENCODING = tiktoken.encoding_for_model("gpt-4o")
 
     def run(self, full_user_request: str):
         document_retriever = self.injector.document_retriever
@@ -231,4 +231,4 @@ AVAILABLE_AGENTS = {
 }
 
 ```
-Now Agent is available in UI to hat with it.
+Now Agent is available in UI to chat with it.
