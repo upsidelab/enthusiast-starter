@@ -11,7 +11,7 @@ CATALOG_DOCUMENT_SOURCE_PLUGINS = {
 }
 
 AVAILABLE_AGENTS = {
+    "Default Agent": "agent.core.agents.tool_calling_agent",
     "Product Search Agent": "agent.core.agents.product_search_react_agent",
-    "Question Answer Agent": "agent.core.agents.tool_calling_agent",
-    "PDF Query Agent": "enthusiast_custom.examples.pdf_agent",
+    "Document Search Agent": "enthusiast_custom.examples.pdf_agent",
 }
