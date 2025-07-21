@@ -1,16 +1,14 @@
-from enthusiast_common.config import AgentConfigWithDefaults, LLMToolConfig
+from enthusiast_common.config import AgentConfigWithDefaults
 from enthusiast_common.config.base import ChatPromptTemplateConfig
 
-from .tools.pdf_context_tool import ContextSearchTool
 from .agent import ExamplePDFAgent
 from .prompt import PDF_AGENT_SYSTEM_PROMPT
 
 
-def get_config(conversation_id: int, streaming: bool) -> AgentConfigWithDefaults:
+def get_config() -> AgentConfigWithDefaults:
     return AgentConfigWithDefaults(
-        conversation_id=conversation_id,
-        prompt_template=ChatPromptTemplateConfig(
-            messages=[
+        chat_prompt_template=ChatPromptTemplateConfig(messages=
+            [
                 (
                     "system",
                     PDF_AGENT_SYSTEM_PROMPT
@@ -21,9 +19,5 @@ def get_config(conversation_id: int, streaming: bool) -> AgentConfigWithDefaults
             ]
         ),
         agent_class=ExamplePDFAgent,
-        llm_tools=[
-            LLMToolConfig(
-                tool_class=ContextSearchTool,
-            )
-        ],
+        tools=ExamplePDFAgent.TOOLS
     )

@@ -12,19 +12,21 @@ CATALOG_DOCUMENT_SOURCE_PLUGINS = {
     "Fetch PDFs": "enthusiast_custom.examples.pdf_documents_plugin.PDFDocumentSourcePlugin",
 }
 
-# Register new agents here
 AVAILABLE_AGENTS: dict[str, dict[str, str]] = {
-    "question_answer_agent": {
-        "name": "Default Agent",
-        "agent_directory_path": "agent.core.agents.tool_calling_agent",
+    "product_search_agent": {
+        "name": "Product Search Agent",
+        "agent_directory_path": "enthusiast_custom.examples.product_search.product_search",
     },
     "pdf_agent": {
         "name": "PDF Agent",
-        "agent_directory_path": "enthusiast_custom.examples.pdf_agent",
+        "agent_directory_path": "enthusiast_custom.examples.pdf_agent.pdf_agent",
+    },
+    "question_answer_agent": {
+        "name": "Question Answer Agent",
+        "agent_directory_path": "agent.core.agents.tool_calling_agent",
     },
 }
 
-# The agent that's created by default for a new dataset
 DEFAULT_AGENT: dict = {
     "type": "question_answer_agent",
     "name": "Default Agent",

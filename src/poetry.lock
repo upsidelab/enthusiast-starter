@@ -417,6 +417,22 @@ marshmallow = ">=3.18.0,<4.0.0"
 typing-inspect = ">=0.4.0,<1"
 
 [[package]]
+name = "enthusiast-agent-re-act"
+version = "1.1.0"
+description = "Base implementation of a ReAct agent for Enthusiast"
+optional = false
+python-versions = "<4,>=3.10"
+groups = ["main"]
+files = [
+    {file = "enthusiast_agent_re_act-1.1.0-py3-none-any.whl", hash = "sha256:f33aa51c05f89f427dfc3f9af8375a3eb15864e52637d5998d083e36e1b0ccff"},
+    {file = "enthusiast_agent_re_act-1.1.0.tar.gz", hash = "sha256:24b77ce43652ca1fb4a4382766252b50979c67726620ee7b14b8c2220121ad00"},
+]
+
+[package.dependencies]
+enthusiast-common = ">=1.2.1,<2.0.0"
+langchain = ">=0.3.26,<0.4.0"
+
+[[package]]
 name = "enthusiast-common"
 version = "1.2.3"
 description = "Core interfaces for developing custom Enthusiast plugins and integrations."
@@ -2094,4 +2110,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "56d0e665053d6640ba6dbe14fa68f5abe4be38bc86b78f6386681a68ba147288"
+content-hash = "a0aeaa37a570f26948b880daa36c3adf3f8ef4e00fdbcac4f2eab790f22fff64"
