@@ -1,4 +1,4 @@
-from enthusiast_common.config import AgentConfigWithDefaults
+from enthusiast_common.config.base import AgentConfigWithDefaults
 from enthusiast_common.config.base import ChatPromptTemplateConfig
 
 from .agent import ExamplePDFAgent

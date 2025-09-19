@@ -1,5 +1,5 @@
 from enthusiast_agent_re_act import BaseReActAgent
-from enthusiast_common.config import LLMToolConfig
+from enthusiast_common.config.base import LLMToolConfig
 from enthusiast_common.utils import RequiredFieldsModel
 from enthusiast_custom.examples.product_search.product_search.tools.product_search import ProductVectorStoreSearchTool
 from enthusiast_custom.examples.product_search.product_search.tools.product_verification import ProductVerificationTool
