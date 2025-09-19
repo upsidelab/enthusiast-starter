@@ -10,6 +10,7 @@ python = "^3.10"
 enthusiast-common = ">=1,<2"
 langchain-community = "^0.3.27"
 pypdf = "^5.8.0"
+enthusiast-agent-re-act = "^1.1.0"
 
 
 [build-system]

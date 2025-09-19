@@ -1,6 +1,8 @@
 from enthusiast_common.agents import BaseAgent
+from enthusiast_common.config import LLMToolConfig
 from enthusiast_common.injectors import BaseInjector
 from enthusiast_common.tools.base import BaseTool
+from enthusiast_custom.examples.pdf_agent.pdf_agent.tools.pdf_context_tool import ContextSearchTool
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.callbacks import BaseCallbackHandler
 from langchain_core.language_models import BaseLanguageModel
@@ -8,6 +10,7 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 class ExamplePDFAgent(BaseAgent):
+    TOOLS = [LLMToolConfig(tool_class=ContextSearchTool)]
     def __init__(
         self,
         tools: list[BaseTool],
