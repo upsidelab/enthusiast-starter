@@ -1,5 +1,5 @@
 from enthusiast_common.agents import BaseAgent
-from enthusiast_common.config import LLMToolConfig
+from enthusiast_common.config.base import LLMToolConfig
 from enthusiast_common.injectors import BaseInjector
 from enthusiast_common.tools.base import BaseTool
 from enthusiast_custom.examples.pdf_agent.pdf_agent.tools.pdf_context_tool import ContextSearchTool

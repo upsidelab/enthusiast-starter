@@ -1,4 +1,4 @@
-from enthusiast_common.config import (
+from enthusiast_common.config.base import (
     AgentCallbackHandlerConfig,
     AgentConfigWithDefaults,
     LLMConfig,
