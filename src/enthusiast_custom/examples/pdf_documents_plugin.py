@@ -3,21 +3,23 @@ from pathlib import Path
 
 import requests
 from enthusiast_common import DocumentSourcePlugin, DocumentDetails
+from enthusiast_common.utils import RequiredFieldsModel
 from langchain_community.document_loaders import PyPDFLoader
+from pydantic import Field, Json
 
 logger = logging.getLogger(__name__)
 
+
+class PDFSourceConfig(RequiredFieldsModel):
+    data: Json = Field(title="PDF urls", description="Json containing values where key is document name and value is url.", default='{"filename.pdf": "https://example.com"}')
+
 class PDFDocumentSourcePlugin(DocumentSourcePlugin):
-    def __init__(self, data_set_id: int, config: dict):
-        super().__init__(data_set_id, config)
+    CONFIGURATION_ARGS = PDFSourceConfig
 
     def fetch(self) -> list[DocumentDetails]:
         results = []
-        data = self.config.get("data", [])
-
-        for document in data:
-            url = document.get("url")
-            title = document.get("title")
+        data = self.CONFIGURATION_ARGS.data
+        for title, url in data.items():
             try:
                 response = requests.get(url)
                 response.raise_for_status()
