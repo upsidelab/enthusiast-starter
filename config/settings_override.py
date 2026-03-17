@@ -1,5 +1,7 @@
 # Put your custom settings in this file
 # They will override the settings defined in Enthusiast's pecl/settings.py
+
+# Register new eCommerce integrations here
 CATALOG_ECOMMERCE_INTEGRATION_PLUGINS = ["enthusiast_source_medusa.MedusaIntegration"]
 
 # Register new product sources here
