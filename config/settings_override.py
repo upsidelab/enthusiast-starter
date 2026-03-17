@@ -22,5 +22,5 @@ AVAILABLE_AGENTS = [
     'enthusiast_agent_order_intake.OrderIntakeAgent',
     'enthusiast_agent_user_manual_search.UserManualSearchAgent',
     'enthusiast_agent_product_search.ProductSearchAgent',
-    'enthusiast_custom.examples.pdf_agent.pdf_agent.ExamplePDFAgent'
+    'enthusiast_custom.examples.document_context_agent.ExampleDocumentContextAgent'
 ]

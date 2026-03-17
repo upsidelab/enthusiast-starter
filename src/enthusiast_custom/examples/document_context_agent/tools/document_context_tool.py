@@ -10,7 +10,7 @@ class ContextSearchToolInput(BaseModel):
 
 class ContextSearchTool(BaseLLMTool):
     NAME = "context_search_tool"
-    DESCRIPTION = "Use it to get context from pdf required for answering questions"
+    DESCRIPTION = "Use it to get context from documents required for answering questions"
     ARGS_SCHEMA = ContextSearchToolInput
     RETURN_DIRECT = False
 
