@@ -16,6 +16,7 @@ class PDFSourceConfig(RequiredFieldsModel):
 
 class PDFDocumentSourcePlugin(DocumentSourcePlugin):
     CONFIGURATION_ARGS = PDFSourceConfig
+    NAME="PDF Document Source"
 
     def fetch(self) -> list[DocumentDetails]:
         results = []
@@ -25,7 +26,7 @@ class PDFDocumentSourcePlugin(DocumentSourcePlugin):
             response = requests.get(url)
             response.raise_for_status()
 
-            temp_path = Path(f"/tmp/temp.pdf")
+            temp_path = Path("/tmp/temp.pdf")
             with open(temp_path, "wb") as f:
                 f.write(response.content)
 

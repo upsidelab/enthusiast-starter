@@ -1,5 +1,5 @@
-from enthusiast_common.config.base import AgentConfigWithDefaults
-from enthusiast_common.config.base import ChatPromptTemplateConfig
+from enthusiast_common.config import AgentConfigWithDefaults
+from enthusiast_common.config.prompts import ChatPromptTemplateConfig, Message, MessageRole
 
 from .agent import ExamplePDFAgent
 from .prompt import PDF_AGENT_SYSTEM_PROMPT
@@ -7,17 +7,17 @@ from .prompt import PDF_AGENT_SYSTEM_PROMPT
 
 def get_config() -> AgentConfigWithDefaults:
     return AgentConfigWithDefaults(
-        chat_prompt_template=ChatPromptTemplateConfig(messages=
-            [
-                (
-                    "system",
-                    PDF_AGENT_SYSTEM_PROMPT
+        prompt_template=ChatPromptTemplateConfig(
+            messages=[
+                Message(
+                    role=MessageRole.SYSTEM,
+                    content=PDF_AGENT_SYSTEM_PROMPT,
                 ),
-                ("placeholder", "{chat_history}"),
-                ("human", "{input}"),
-                ("placeholder", "{agent_scratchpad}"),
+                Message(role=MessageRole.PLACEHOLDER, content="{chat_history}"),
+                Message(role=MessageRole.USER, content="{input}"),
+                Message(role=MessageRole.PLACEHOLDER, content="{agent_scratchpad}"),
             ]
         ),
         agent_class=ExamplePDFAgent,
-        tools=ExamplePDFAgent.TOOLS
+        tools=ExamplePDFAgent.TOOLS,
     )
