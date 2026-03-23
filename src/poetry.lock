@@ -485,15 +485,32 @@ enthusiast-common = ">=1.6.0,<2.0.0"
 langchain = ">=0.3.26,<0.4.0"
 
 [[package]]
+name = "enthusiast-agent-user-manual-search"
+version = "1.3.0"
+description = "User Manual Search Agent for Enthusiast"
+optional = false
+python-versions = "<4,>=3.10"
+groups = ["main"]
+files = [
+    {file = "enthusiast_agent_user_manual_search-1.3.0-py3-none-any.whl", hash = "sha256:6d98253d329ffad184670fe551440fb9a37020c2d385bd1764d3a3410653d568"},
+    {file = "enthusiast_agent_user_manual_search-1.3.0.tar.gz", hash = "sha256:85258bde2ddbfd1794cdcefc8a05722fa09f809422854a7f675579c93d0a476c"},
+]
+
+[package.dependencies]
+enthusiast_agent_tool_calling = ">=1.1.0"
+enthusiast-common = ">=1.6.0,<2.0.0"
+langchain = ">=0.3.26,<0.4.0"
+
+[[package]]
 name = "enthusiast-common"
-version = "1.6.0"
+version = "1.6.1"
 description = "Core interfaces for developing custom Enthusiast plugins and integrations."
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "enthusiast_common-1.6.0-py3-none-any.whl", hash = "sha256:5b09eeae58520c9e0917db4358394ce70da7d7034495ac2f00a378e81cb86dea"},
-    {file = "enthusiast_common-1.6.0.tar.gz", hash = "sha256:1b647e380ce5a63b096b78ea28320162088bb98a2bba6a04853931867c8652d7"},
+    {file = "enthusiast_common-1.6.1-py3-none-any.whl", hash = "sha256:0dbd187ba36104c083a828a1df6f720cfff78a7b8eb0152f668c901a76e695f7"},
+    {file = "enthusiast_common-1.6.1.tar.gz", hash = "sha256:ec079c2696a182969d699af06f48381931ac6160e20afcfd2bba73629166e2ee"},
 ]
 
 [package.dependencies]
@@ -501,18 +518,18 @@ langchain-core = ">=0.3.83,<0.4.0"
 
 [[package]]
 name = "enthusiast-source-medusa"
-version = "1.2.1"
+version = "1.3.1"
 description = "A plugin for Enthusiast that provides a Medusa products importer."
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "enthusiast_source_medusa-1.2.1-py3-none-any.whl", hash = "sha256:a47f3428b28eeec97095edc2ea645ba0934946c13e072bd32b963adf91484386"},
-    {file = "enthusiast_source_medusa-1.2.1.tar.gz", hash = "sha256:9b3b2ce8765e776dd39b939f3d8f664f0e861db871b3ff26209c72ab472f636f"},
+    {file = "enthusiast_source_medusa-1.3.1-py3-none-any.whl", hash = "sha256:cb67c36c8bf7320a1cd0ce3c450b7a74c85058333c766a3a06e2332d1db06fd5"},
+    {file = "enthusiast_source_medusa-1.3.1.tar.gz", hash = "sha256:a1e424f751a3d690c62b13096fb0849687e6238e7fbadc2fe167f6ab12a8f76a"},
 ]
 
 [package.dependencies]
-enthusiast-common = ">=1.4,<2"
+enthusiast-common = ">=1.6.1,<2"
 requests = ">=2.32.3,<3.0.0"
 
 [[package]]
@@ -2188,4 +2205,4 @@ cffi = ["cffi (>=1.11)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "956699523800980d46eb55cec4eeff828bf204c145a88334dc458ca61faae10e"
+content-hash = "55a47ce78fbcba29c351cc17f79312a32815b8b1ed00aa90e30b820ee75c825c"
