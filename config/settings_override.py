@@ -22,5 +22,7 @@ AVAILABLE_AGENTS = [
     'enthusiast_agent_order_intake.OrderIntakeAgent',
     'enthusiast_agent_user_manual_search.UserManualSearchAgent',
     'enthusiast_agent_product_search.ProductSearchAgent',
+    'enthusiast_agent_catalog_web_import.CatalogWebImportAgent',
+    'enthusiast_agent_invoice_scanning.InvoiceScanningAgent',
     'enthusiast_custom.examples.document_context_agent.ExampleDocumentContextAgent'
 ]
