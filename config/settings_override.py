@@ -26,3 +26,10 @@ AVAILABLE_AGENTS = [
     'enthusiast_agent_invoice_scanning.InvoiceScanningAgent',
     'enthusiast_custom.examples.document_context_agent.ExampleDocumentContextAgent'
 ]
+
+AVAILABLE_AGENTIC_EXECUTION_DEFINITIONS = [
+    'enthusiast_agent_catalog_enrichment.CatalogEnrichmentAgenticExecutionDefinition',
+    'enthusiast_agent_order_intake.OrderIntakeAgenticExecutionDefinition',
+    'enthusiast_agent_catalog_web_import.CatalogWebImportAgenticExecutionDefinition',
+    'enthusiast_agent_invoice_scanning.InvoiceScanningAgenticExecutionDefinition',
+]
