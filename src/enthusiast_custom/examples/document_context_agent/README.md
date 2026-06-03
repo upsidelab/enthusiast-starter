@@ -9,7 +9,7 @@ Add the agent to `AVAILABLE_AGENTS` in `config/settings_override.py`:
 ```python
 AVAILABLE_AGENTS = [
     # ... other agents ...
-    'enthusiast_custom.examples.document_context_agent.ExampleDocumentContextAgent',
+    'enthusiast_custom.ExampleDocumentContextAgent',
 ]
 ```
 
@@ -29,4 +29,4 @@ The system prompt instructs the agent to always call the context tool first — 
 
 ### Config (`config.py`)
 
-`get_config()` returns an `AgentConfigWithDefaults` with a standard chat prompt template (system message, chat history, user input, agent scratchpad) wired to `ExampleDocumentContextAgent` and its tools.
+`ExampleDocumentContextAgentConfigProvider` extends `BaseAgentConfigProvider` and implements `get_config()`, returning an `AgentConfigWithDefaults` with a system prompt wired to `ExampleDocumentContextAgent` and its tools.

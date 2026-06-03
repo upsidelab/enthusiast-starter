@@ -59,102 +59,98 @@ from pathlib import Path
 
 import requests
 from enthusiast_common import DocumentSourcePlugin, DocumentDetails
+from enthusiast_common.utils import RequiredFieldsModel
 from langchain_community.document_loaders import PyPDFLoader
+from pydantic import Field
 
 logger = logging.getLogger(__name__)
 
+
+class PDFSourceConfig(RequiredFieldsModel):
+    url: str = Field(title="URL", description="URL to PDF file.")
+    filename: str = Field(title="Filename", description="PDF filename.")
+
+
 class PDFDocumentSourcePlugin(DocumentSourcePlugin):
-    def __init__(self, data_set_id: int, config: dict):
-        super().__init__(data_set_id, config)
+    CONFIGURATION_ARGS = PDFSourceConfig
+    NAME = "PDF Document Source"
 
     def fetch(self) -> list[DocumentDetails]:
         results = []
-        data = self.config.get("data", [])
+        title = self.CONFIGURATION_ARGS.filename
+        url = self.CONFIGURATION_ARGS.url
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
 
-        for document in data:
-            url = document.get("url")
-            title = document.get("title")
-            try:
-                response = requests.get(url)
-                response.raise_for_status()
+            temp_path = Path("/tmp/temp.pdf")
+            with open(temp_path, "wb") as f:
+                f.write(response.content)
 
-                temp_path = Path(f"/tmp/temp.pdf")
-                with open(temp_path, "wb") as f:
-                    f.write(response.content)
+            loader = PyPDFLoader(str(temp_path))
+            for index, page in enumerate(loader.lazy_load()):
+                results.append(DocumentDetails(url=f"{url}/{index}", title=title, content=page.page_content))
+            return results
 
-                loader = PyPDFLoader(str(temp_path))
-                for index, page in enumerate(loader.lazy_load()):
-                    results.append(DocumentDetails(url=f"{url}/{index}", title=title, content=page.page_content))
-                return results
-
-            except Exception as e:
-                logger.error(f"Failed to load {url} ({title}): {e}")
+        except Exception as e:
+            logger.error(f"Failed to load {url} ({title}): {e}")
 ```
 3. To enable new plugin, add it to settings_override.py:
 ```python
-CATALOG_DOCUMENT_SOURCE_PLUGINS = {
-    "PDF Plugin": "<path_to_file>.PDFDocumentSourcePlugin"
-}
+CATALOG_DOCUMENT_SOURCE_PLUGINS = [
+    "enthusiast_custom.examples.pdf_documents_plugin.PDFDocumentSourcePlugin",
+]
 ```
-Now this custom plugin will be available in Document source section.
-`config` variable used in above example could be provided while adding any source plugin, in this example it was used to provide urls to documents.
+
+Now this custom plugin will be available in Document source section. When adding a source, provide the `url` (HTTP URL to the PDF) and `filename` fields.
 
 ### Next, let's move to agent. 
-1. Create a directory for you agent (e.g. `pdf_agent`). Then inside it create `agent.py` file:
-```python
-from enthusiast_common.agents import BaseAgent
-from enthusiast_common.injectors import BaseInjector
-from enthusiast_common.tools.base import BaseTool
-from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain_core.callbacks import BaseCallbackHandler
-from langchain_core.language_models import BaseLanguageModel
-from langchain_core.prompts import ChatPromptTemplate
 
+1. Create the agent directory structure:
 
-class ExamplePDFAgent(BaseAgent):
-    def __init__(
-        self,
-        tools: list[BaseTool],
-        llm: BaseLanguageModel,
-        prompt: ChatPromptTemplate,
-        conversation_id: int,
-        injector: BaseInjector,
-        callback_handler: BaseCallbackHandler | None = None,
-    ):
-        super().__init__(
-            tools=tools,
-            llm=llm,
-            prompt=prompt,
-            conversation_id=conversation_id,
-            callback_handler=callback_handler,
-            injector=injector,
-        )
-        self._agent_executor = self._create_agent_executor()
-
-    def _create_agent_executor(self, **kwargs) -> AgentExecutor:
-        tools = self._create_tools()
-        agent = create_tool_calling_agent(self._llm, tools, self._prompt)
-        return AgentExecutor(
-            agent=agent, tools=tools, verbose=True, memory=self._injector.chat_summary_memory, **kwargs
-        )
-
-    def _create_tools(self):
-        return [tool_class.as_tool() for tool_class in self._tools]
-
-    def get_answer(self, input_text: str) -> str:
-        agent_output = self._agent_executor.invoke(
-            {"input": input_text}, config={"callbacks": [self._callback_handler] if self._callback_handler else []}
-        )
-        return agent_output["output"]
 ```
-2. Create Prompt in prompt.py file.
+src/enthusiast_custom/
+    __init__.py
+    examples/
+        document_context_agent/
+            __init__.py
+            agent.py
+            config.py
+            prompt.py
+            tools/
+                __init__.py
+                document_context_tool.py
+```
+
+2. Create `agent.py`:
+
 ```python
-PDF_AGENT_SYSTEM_PROMPT="""
-You are a helpful agent, answering questions about pdf document. Always use context tool
+from enthusiast_agent_tool_calling import BaseToolCallingAgent
+from enthusiast_common.config.base import LLMToolConfig
+
+from .tools import ContextSearchTool
+
+
+class ExampleDocumentContextAgent(BaseToolCallingAgent):
+    AGENT_KEY = "enthusiast-agent-example-document-context"
+    NAME = "Example Document Context Agent"
+
+    TOOLS = [LLMToolConfig(tool_class=ContextSearchTool)]
+```
+
+3. Create `prompt.py`:
+
+```python
+DOCUMENT_CONTEXT_AGENT_SYSTEM_PROMPT = """
+You are a helpful agent, answering questions about documents and resources mentioned in them.
+
+Whenever the user asks a question, always use the document context tool first to extract
+relevant context before answering.
 """
 ```
 
-3. Create context retrieving tool:
+4. Create `tools/document_context_tool.py`:
+
 ```python
 from enthusiast_common.injectors import BaseInjector
 from enthusiast_common.tools import BaseLLMTool
@@ -168,66 +164,53 @@ class ContextSearchToolInput(BaseModel):
 
 class ContextSearchTool(BaseLLMTool):
     NAME = "context_search_tool"
-    DESCRIPTION = "Use it to get context from pdf required for answering questions"
+    DESCRIPTION = "Use it to get context from documents required for answering questions"
     ARGS_SCHEMA = ContextSearchToolInput
     RETURN_DIRECT = False
 
-    def __init__(
-        self,
-        data_set_id: int,
-        llm: BaseLanguageModel,
-        injector: BaseInjector,
-    ):
+    def __init__(self, data_set_id: int, llm: BaseLanguageModel, injector: BaseInjector):
         super().__init__(data_set_id=data_set_id, llm=llm, injector=injector)
-        self.data_set_id = data_set_id
-        self.llm = llm
-        self.injector = injector
 
     def run(self, full_user_request: str):
-        document_retriever = self.injector.document_retriever
-        relevant_documents = document_retriever.find_content_matching_query(full_user_request)
-        content  = [document.content for document in relevant_documents]
-
-        return content
+        relevant_documents = self.injector.document_retriever.find_content_matching_query(full_user_request)
+        return [doc.content for doc in relevant_documents]
 ```
 
-4. Create configuration inside `config.py` file:
+5. Create `config.py`:
+
 ```python
-from enthusiast_common.config import AgentConfigWithDefaults, LLMToolConfig
-from langchain_core.prompts import ChatPromptTemplate
+from enthusiast_common.agents import BaseAgentConfigProvider, ConfigType
+from enthusiast_common.config import AgentConfigWithDefaults
 
-from .tools.pdf_context_tool import ContextSearchTool
-from .agent import ExamplePDFAgent
-from .prompt import PDF_AGENT_SYSTEM_PROMPT
+from .agent import ExampleDocumentContextAgent
+from .prompt import DOCUMENT_CONTEXT_AGENT_SYSTEM_PROMPT
 
 
-def get_config(conversation_id: int, streaming: bool) -> AgentConfigWithDefaults:
-    return AgentConfigWithDefaults(
-        conversation_id=conversation_id,
-        prompt_template=ChatPromptTemplate.from_messages(
-            [
-                (
-                    "system",
-                    PDF_AGENT_SYSTEM_PROMPT,
-                ),
-                ("placeholder", "{chat_history}"),
-                ("human", "{input}"),
-                ("placeholder", "{agent_scratchpad}"),
-            ]
-        ),
-        agent_class=ExamplePDFAgent,
-        llm_tools=[
-            LLMToolConfig(
-                tool_class=ContextSearchTool,
-            )
-        ],
-    )
+class ExampleDocumentContextAgentConfigProvider(BaseAgentConfigProvider):
+    def get_config(self, config_type: ConfigType = ConfigType.CONVERSATION) -> AgentConfigWithDefaults:
+        return AgentConfigWithDefaults(
+            system_prompt=DOCUMENT_CONTEXT_AGENT_SYSTEM_PROMPT,
+            agent_class=ExampleDocumentContextAgent,
+            tools=ExampleDocumentContextAgent.TOOLS,
+        )
 ```
-5. Finally add your agent to `settings_override.py`:
+
+6. Export from `src/enthusiast_custom/__init__.py`:
+
 ```python
-AVAILABLE_AGENTS = {
-    "PDF Agent": "enthusiast_custom.pdf_agent",
-}
+from .examples.document_context_agent import ExampleDocumentContextAgent, ExampleDocumentContextAgentConfigProvider
 
+__all__ = ["ExampleDocumentContextAgent", "ExampleDocumentContextAgentConfigProvider"]
 ```
+
+7. Register the agent in `config/settings_override.py`:
+
+```python
+AVAILABLE_AGENTS = [
+    "enthusiast_custom.ExampleDocumentContextAgent",
+]
+```
+
+> **Note:** The agent must be registered via the top-level `enthusiast_custom` module path (not the nested submodule path). The AgentRegistry resolves config providers by scanning the module at the registered path — nested paths cause lookup failures.
+
 Now Agent is available in UI to chat with it.
