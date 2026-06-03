@@ -5,6 +5,11 @@ services:
       - POSTGRES_USER=enthusiast
       - POSTGRES_PASSWORD=enthusiast
       - POSTGRES_DB=enthusiast
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U enthusiast -d enthusiast"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
   redis:
     image: redis:latest
   frontend:
@@ -26,6 +31,9 @@ services:
     environment:
       - PORT=10000
       - RUN_MIGRATIONS=True
+    depends_on:
+      postgres:
+        condition: service_healthy
   worker:
     build:
       context: .
@@ -35,3 +43,6 @@ services:
     environment:
       - RUN_MIGRATIONS=False
       - RUN_WORKER=True
+    depends_on:
+      postgres:
+        condition: service_healthy
