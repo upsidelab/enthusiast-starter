@@ -6,7 +6,7 @@ services:
       - POSTGRES_PASSWORD=enthusiast
       - POSTGRES_DB=enthusiast
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U enthusiast -d enthusiast"]
+      test: ["CMD-SHELL", "pg_isready -U enthusiast"]
       interval: 5s
       timeout: 5s
       retries: 10
