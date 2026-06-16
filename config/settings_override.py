@@ -24,7 +24,7 @@ AVAILABLE_AGENTS = [
     'enthusiast_agent_product_search.ProductSearchAgent',
     'enthusiast_agent_catalog_web_import.CatalogWebImportAgent',
     'enthusiast_agent_invoice_scanning.InvoiceScanningAgent',
-    'enthusiast_custom.ExampleDocumentContextAgent'
+    'enthusiast_custom.CatalogKnowledgeAgent'
 ]
 
 AVAILABLE_AGENTIC_EXECUTION_DEFINITIONS = [
