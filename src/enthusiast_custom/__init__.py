@@ -1,3 +1,3 @@
-from .examples.document_context_agent import ExampleDocumentContextAgent, ExampleDocumentContextAgentConfigProvider
+from .examples.catalog_knowledge_agent import CatalogKnowledgeAgent, CatalogKnowledgeConfigProvider
 
-__all__ = ["ExampleDocumentContextAgent", "ExampleDocumentContextAgentConfigProvider"]
+__all__ = ["CatalogKnowledgeAgent", "CatalogKnowledgeConfigProvider"]

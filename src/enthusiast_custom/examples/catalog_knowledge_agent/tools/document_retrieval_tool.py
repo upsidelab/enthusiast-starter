@@ -4,14 +4,14 @@ from langchain_core.language_models import BaseLanguageModel
 from pydantic import BaseModel, Field
 
 
-class ContextSearchToolInput(BaseModel):
+class DocumentRetrievalToolInput(BaseModel):
     full_user_request: str = Field(description="user's full request")
 
 
-class ContextSearchTool(BaseLLMTool):
-    NAME = "context_search_tool"
+class DocumentRetrievalTool(BaseLLMTool):
+    NAME = "document_retrieval"
     DESCRIPTION = "Use it to get context from documents required for answering questions"
-    ARGS_SCHEMA = ContextSearchToolInput
+    ARGS_SCHEMA = DocumentRetrievalToolInput
     RETURN_DIRECT = False
 
     def __init__(
@@ -28,6 +28,6 @@ class ContextSearchTool(BaseLLMTool):
     def run(self, full_user_request: str):
         document_retriever = self.injector.document_retriever
         relevant_documents = document_retriever.find_content_matching_query(full_user_request)
-        content  = [document.content for document in relevant_documents]
+        content = [document.content for document in relevant_documents]
 
         return content
